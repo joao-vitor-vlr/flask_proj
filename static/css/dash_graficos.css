@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@800&display=swap');
+
+a{
+    text-decoration: none;
+    color: var(--color-five);
+}
+body{
+    padding: 0%;
+    margin: 0%;
+    background-color: var(--color-nine);
+    font-family: 'Raleway', sans-serif;
+    overflow-x: hidden;
+}
+
+:root {
+    --color-one: #e7e7de;
+    --color-two: #008891;
+    --color-three: #00587a;
+    --color-four: #0f3057;
+    --color-five: #000000;
+    --color-six: #0087913a;
+    --color-seven: #e7e7de80;
+    --color-eigth: rgb(206, 206, 206);
+    --color-nine: #333;
+    --color-ten: #1a1a1a;
+}
+
+/*--------------------------------------------- começo da barra de menu */
+.header {
+    background-color: var(--color-ten);
+    border-right: 4px solid var(--color-two);
+    width: 20%;
+    height: 100%;
+    position: fixed;
+}
+.header-logo{
+    justify-content: center;
+    height: 8em;
+    display: flex;
+    align-items: center;
+}
+.logo {
+    max-width: 45%;
+    width: auto;
+    max-height: 100%;
+    height: auto;
+}
+
+.header .container .highlight {
+    color: var(--color-two);
+}
+
+.usuario {
+    width: 75%;
+    overflow: hidden;
+    margin: auto;
+    text-align: center;
+    color: var(--color-one);
+}
+
+.usuario h3 {
+    font-weight: 100;
+}
+
+.header ul {
+    list-style-type: none;
+    float: left;
+    margin-top: 40px;
+    font-weight: bold;
+}
+
+.header li {
+    margin: 0 0 30px 0;
+}
+
+.header a {
+    text-transform: uppercase;
+    color: var(--color-one);
+}
+
+.header .container .highlight:hover {
+    color: var(--color-six);
+}
+
+.header .current {
+    color: var(--color-one);
+    font-weight: bold;
+}
+
+
+
+
+
+.dashboard {
+    text-align: center;
+}
+
+.dashboard h1 {
+    margin-bottom: 40px;
+}
+
+.dashboard .input-padrao {
+    width: 50%;
+    display: inline-block;
+}
+
+.box-login {
+    display: inline-block;
+    background-color: white;
+    box-shadow:  3px 3px 5px 2px #ccc;
+    padding: 60px 20px 0px 20px;
+    border-radius: 20px;
+    width: 400px;
+}
+
+.dashboard .btn-green {
+    display: block;
+    float: none;
+    margin: auto;
+}
+
+
+
+#nome_maquina{
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--color-two);
+    justify-content: center;
+    align-items: center;
+    padding-top: 3%;
+    padding-bottom: 2%;
+    padding-left: 63%;
+    background-color: var(--color-eigth);
+}
+
+
+
+/* div do grafico ponteiro */
+#chart_div{
+    width: 100%;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 10%;
+    margin: 5% 0%;
+}
+
+div canvas #myChart{
+    width: 100px;
+    height: 50px;
+}
+
+
+.grafico_chart{
+    width: 60%;
+    height: 20%;
+    margin-left: 25%;
+    padding: 6% 5%;
+    background-color: var(--color-eigth);
+    border-radius: 10px;
+    margin-bottom: 5%;
+}
+
+@media screen and (max-width: 550px) {
+    .grafico_chart{
+        width: 30%!important;
+        height: 5px!important;
+    }
+    #chart_div{
+        width: 100%;
+        height: 100px;
+    }
+}

@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Prepta Monitoring</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style_dashboard.css') }}">
+    <link rel="shortcut icon" href="imagens/icon.png">
+    <script src="{{ url_for('static', filename= 'js/funcoes.js') }}"></script>
+    <script src="{{ url_for('static', filename= 'js/login.js') }}"></script>
+</head>
+
+
+<body>
+
+    <div class="header">
+        <div class="container">
+            <div class="header-logo">
+                <img src="{{ url_for('static', filename='img/logobranco.png') }}" class="logo">
+            </div>
+            <div class="usuario">
+              
+                <h3>Olá, </h3>
+               
+            </div>
+            <div class="nav">
+                
+                    <ul>
+                        {% for item in tabela %}
+                        <li><a href="login.html" class="highlight" onclick="logoff()">{{ item['content'] }}</a></li>
+                        {% endfor %}
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="dashboard">
+        <div id="container">
+            {% for item in tabela %}
+            <div style="height:30%; width:40%"class="caminhao">
+                <h4>Maquina {{ item['created'] }}
+                    <span name="namecaminhao" id="idRelatorio" value="1">
+                        {{ item['nome'] }}
+                    </span>
+                </h4>
+                <div id="maquina${x}" class="div_conteudo_ds">
+                <div class="valores">
+                    <div class="valor" id="div_UsoCPU">
+                        Maquina Inativa
+                    </div>
+                    <div class="valor" id="div_UsoMemoria">
+                        Maquina Inativa
+                    </div>
+
+                </div>
+                <div class="alertas">
+                    <div class="alerta" id="div_alerta_UsoCPU">
+                    </div>
+                    <div class="alerta_memoria" id="div_alerta_Memoria">
+
+                    </div>
+                </div>
+
+                <div class="barra">
+                    <p>Disco 1</p>
+                    <div class="progress">
+                        <div class="progress-done" data-done="90">
+                            90%
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <button id="botaoCaminhao1" class="btn" onclick="chamargraficos()">
+                    VER GRÁFICO
+                </button>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    let usuario;
+
+    
+    // barra de progresso
+
+
+    var maquinas = [];
+    var processos = [];
+    var idOne
+    var discos = [];
+    var discosRelatorio = [];
+    var idMaquinas = []
+    var CpuUso = [];
+
+    window.onload = pegarMaquinas();
+
+
+    function pegarMaquinas() {
+        fetch(`/maquinas/todas`, {
+            method: "GET",
+        }).then(resposta => {
+            if (resposta.ok) {
+
+                resposta.json().then(json => {
+                    maquinas = json;
+                    console.log(maquinas)
+                    enviarProcessos()
+                });
+
+            } else {
+
+                console.log('Erro de lab');
+
+                resposta.text().then(texto => {
+                    alert(texto);
+                });
+            }
+        });
+
+        return false;
+    }
+
+    function enviarProcessos() {
+        let xx = 0;
+        for (let x = 0; x < maquinas.length; x++) {
+            xx++
+            container.innerHTML += ` <div style="height:30%; width:40%"class="caminhao">
+                <h4>Maquina
+                    <span name="namecaminhao" id="idRelatorio" value="1">
+                        ${xx}-${maquinas[x].hostName}
+                    </span>
+                </h4>
+                <div id="maquina${x}" class="div_conteudo_ds">
+                <div class="valores">
+                    <div class="valor" id="div_UsoCPU">
+                        Maquina Inativa
+                    </div>
+                    <div class="valor" id="div_UsoMemoria">
+                        Maquina Inativa
+                    </div>
+
+                </div>
+                <div class="alertas">
+                    <div class="alerta" id="div_alerta_UsoCPU">
+                    </div>
+                    <div class="alerta_memoria" id="div_alerta_Memoria">
+
+                    </div>
+                </div>
+
+                <div class="barra">
+                    <p>Disco 1</p>
+                    <div class="progress">
+                        <div class="progress-done" data-done="90">
+                            90%
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <button id="botaoCaminhao1" class="btn" onclick="chamargraficos(${maquinas[x].idMaquina})">
+                    VER GRÁFICO
+                </button>
+
+            </div>`
+        }
+
+        reprocesso()
+    }
+    function reprocesso() {
+        var barra = 0;
+        for (let x = 0; x < maquinas.length; x++) {
+            var discox = 0;
+
+            fetch(`/leituras/recuperar/${maquinas[x].idMaquina}`, {
+                method: "GET",
+            }).then(resposta => {
+                if (resposta.ok) {
+                    resposta.json().then(json => {
+                        var alertaCPU = "none";
+                        var alertaMemoria = "none";
+                        var processos = json;
+                        var discoUso = (processos[processos.length - 1].UsoDisco / processos[processos.length - 1].TotalDisco) * 100;
+                        
+                        CpuUso = processos[processos.length - 1].UsoCPU;
+                        MemoriaUso = processos[processos.length - 1].UsoMemoria;
+                        discoUso = discoUso.toFixed(2);
+                        
+                        if (CpuUso >= 1) {
+                            alertaCPU = "block";
+                        }
+                        if(MemoriaUso >= 1){
+                            alertaMemoria = "block";
+                        }
+                        
+                        console.log(discoUso + "===========================")
+                        console.log(processos);
+                        
+                        if (processos.length <= 0) {
+                            document.getElementById(`maquina${x}`).innerHTML = 
+                       `<div class="valores">
+                            <div class="valor" id="div_UsoCPU">
+                                CPU: Inativa
+                            </div>
+                            <div class="valor" id="div_UsoMemoria">
+                                Memoria: Inativa
+                            </div>
+                        </div>
+                            <div class="alertas">
+                                <div class="alerta" id="div_alerta_UsoCPU"></div>
+                                <div class="alerta_memoria" id="div_alerta_Memoria"></div>
+                            </div>
+
+                        <div class="barra">
+                            <p>Disco 1</p>
+                            <div class="progress-pai">
+                                    <div class="progress-filho" style="width:100%; height:100%; background-color: #008891; border-radius: 20px; font-weight: bold;" >
+                                          Inativo
+                                    </div>
+                                </div>
+                        </div>`
+                        } else {
+                            document.getElementById(`maquina${x}`).innerHTML =
+                            `<div class="valores">
+                                <div class="valor" id="div_UsoCPU">
+                                    CPU: ${processos[processos.length - 1].UsoCPU}
+                                </div>
+                                <div class="valor" id="div_UsoMemoria">
+                                    Memoria: ${processos[processos.length - 1].UsoMemoria}
+                                </div>
+                            </div>
+                            <div class="alertas">
+                                <div class="alerta" id="div_alerta_UsoCPU" style="display: ${alertaCPU};">
+                                    Cpu em alerta!
+                                </div>
+                                <div class="alerta_memoria" id="div_alerta_Memoria" style="display: ${alertaMemoria};">
+                                    Memoria em alerta!
+                                </div>
+                            </div>
+                                                    
+                            <div class="barra">
+                                <p>Disco 1</p>
+                                <div class="progress-pai">
+                                    <div class="progress-filho" style="width:${discoUso}%; height:100%; background-color: #008891; border-radius: 20px; font-weight: bold;" >
+                                        ${(processos[processos.length - 1].UsoDisco / 1024).toFixed(0)}GB/${(processos[processos.length - 1].TotalDisco / 1024).toFixed(0)}GB   
+                                    </div>
+                                </div>
+                            </div>`
+
+                        }
+
+                        processos.splice(0, 1);
+                        console.log(processos.length)
+                        console.log("testes")
+
+                    });
+                } else {
+
+                    console.log('Erro de processos');
+
+                    resposta.text().then(texto => {
+                        alert(texto);
+                    });
+                }
+
+            });
+
+
+
+            // console.log("-Sou index" + index + "-")
+        }
+
+        setTimeout(() => {
+            reprocesso()
+        }, 2500);
+
+    }
+    function chamargraficos(id) {
+        sessionStorage.setItem('idMaquina', id)
+        window.location.href = './grafico1.html';
+    }
+</script>
